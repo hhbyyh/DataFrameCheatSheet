@@ -61,6 +61,8 @@ DataFrame is simply a type alias of Dataset[Row]
  
  * `df.select($"name", $"age" + 1).show()`
  
+ * `val teenagersDF = spark.sql("SELECT name, age FROM people WHERE age BETWEEN 13 AND 19")`
+ 
 ### Filter
  
  * `df.filter($"age" > 21).show()`
