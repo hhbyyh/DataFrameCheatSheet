@@ -2,7 +2,7 @@
 Yuhao's cheat sheet for Spark DataFrame
 
 ## Core Concepts
-
+DataFrame is simply a type alias of Dataset[Row]
 
 
 ## Quick Reference
@@ -26,43 +26,66 @@ Yuhao's cheat sheet for Spark DataFrame
    `spark.createDataset(rdd)`
 *  `List("a").toDS()`  
    `Seq(1, 3, 5).toDS()`
-   
-   
-#### create from RDD
-
-
-
-   
-*  `val rdd = sc.parallelize(1 to 5)`       
-   `rdd.toDS().show()`
-      
-
-  
 * // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)   
   `val caseClassDS = Seq(Person("Andy", 32)).toDS()`
   
 * `val caseClassDS = spark.createDataset(Seq(Person("Andy", 32), Person("Andy2", 33)))`
+   
+   
+#### create from RDD 
+   
+*  `val rdd = sc.parallelize(1 to 5)`       
+   `rdd.toDS().show()`
+  
+* // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)   
+   val peopleDF = spark.sparkContext
+  .textFile("examples/src/main/resources/people.txt")
+  .map(_.split(","))
+  .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
+  .toDF()
 
 
 #### create from File    
 * `spark.read.json("examples/src/main/resources/people.json")`
 
+* `val path = "examples/src/main/resources/people.json"`
+  `val peopleDS = spark.read.json(path).as[Person]`
+
 
 ### Select
 
-df.select($"name", $"age" + 1).show()
+ * `df.select($"name", $"age" + 1).show()`
 
- df.createOrReplaceTempView("people")
- val sqlDF = spark.sql("SELECT * FROM people")
+ * `df.createOrReplaceTempView("people")`
+   `val sqlDF = spark.sql("SELECT * FROM people")`
  
- df.select($"name", $"age" + 1).show()
+ * `df.select($"name", $"age" + 1).show()`
  
- df.filter($"age" > 21).show()
+### Filter
+ 
+ * `df.filter($"age" > 21).show()`
+ 
+###  GroupBy
+
+ * `df.groupBy("age").count().show()`
+ 
+###  Temp View and Table
+
+* `df.createGlobalTempView("people")`
+
+* `// Global temporary view is tied to a system preserved database `global_temp``
+  `spark.sql("SELECT * FROM global_temp.people").show()`
+  
+* `// Global temporary view is cross-session`
+  `spark.newSession().sql("SELECT * FROM global_temp.people").show()`
+ 
 
 ### UDF
 
 
 ### Schema
+
+df.printSchema()
 
 
 
