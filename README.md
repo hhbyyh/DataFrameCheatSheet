@@ -89,9 +89,15 @@ DataFrame is simply a type alias of Dataset[Row]
 
 df.printSchema()
 
+```
+    val rows = parentModel.freqItemsets.map(f => Row(f.items, f.freq))
 
-
-
+    val schema = StructType(Seq(
+      StructField("items", dataset.schema($(featuresCol)).dataType, nullable = false),
+      StructField("freq", LongType, nullable = false)))
+    val frequentItems = dataset.sparkSession.createDataFrame(rows, schema)
+```
+`data.where(col($(featuresCol)).isNotNull)`
 
 
 
