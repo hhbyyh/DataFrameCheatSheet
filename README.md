@@ -97,6 +97,7 @@ df.printSchema()
       StructField("freq", LongType, nullable = false)))
     val frequentItems = dataset.sparkSession.createDataFrame(rows, schema)
 ```
+`import org.apache.spark.sql.functions._`
 `data.where(col($(featuresCol)).isNotNull)`
 
 
