@@ -156,6 +156,14 @@ DataFrame is simply a type alias of Dataset[Row]
     udf(raw2prediction _).apply(col(getRawPredictionCol))
   ```
 
+  ```
+    val predictUDF = udf { (features: Any) =>
+      bcastModel.value.predict(features.asInstanceOf[Vector])
+    }
+    dataset.withColumn($(predictionCol), predictUDF(col($(featuresCol))))
+  ```
+  
+  
 ### Schema
 
 * print schema
@@ -171,5 +179,14 @@ DataFrame is simply a type alias of Dataset[Row]
     MetadataUtils.getNumClasses(dataset.schema($(labelCol)))
   ```
 
+### Read and write
 
+* parquet
 
+  ```
+    val data = sparkSession.read.format("parquet").load(dataPath)
+    val Row(coefficients: Vector, intercept: Double) =
+        data.select("coefficients", "intercept").head()
+  ```
+  
+  
