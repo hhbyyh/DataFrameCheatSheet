@@ -139,13 +139,22 @@ DataFrame is simply a type alias of Dataset[Row]
  
 * GroupBy
 
- ```
-   df.groupBy("age").count().show()
- ```  
+  ```
+    df.groupBy("age").count().show()
+  ```  
  
 
 ### UDF
 
+
+* select DataFrame with UDF
+
+  ```
+    protected def raw2prediction(rawPrediction: Vector): Double = rawPrediction.argmax
+    ...
+    
+    udf(raw2prediction _).apply(col(getRawPredictionCol))
+  ```
 
 ### Schema
 
