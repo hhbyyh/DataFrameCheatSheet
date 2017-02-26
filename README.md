@@ -18,21 +18,35 @@ DataFrame is simply a type alias of Dataset[Row]
 
 
 ### Creation
-#### create from seq
-* `spark.createDataset(Seq(1, 2)) `
-* `spark.createDataset(1 to 10)`
-* `spark.createDataset(Array((1, "Tom"), (2, "Jerry"))).toDF("id", "name")`
-*  `val rdd = sc.parallelize(1 to 5)`
-   `spark.createDataset(rdd)`
-*  `List("a").toDS()`  
-   `Seq(1, 3, 5).toDS()`
-* // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)   
-  `val caseClassDS = Seq(Person("Andy", 32)).toDS()`
+* create from seq
+
+  `spark.createDataset(Seq(1, 2))`
   
-* `val caseClassDS = spark.createDataset(Seq(Person("Andy", 32), Person("Andy2", 33)))`
+* create from range
+
+    `spark.createDataset(1 to 10)`
+    
+* create from array of tuples
+
+    `spark.createDataset(Array((1, "Tom"), (2, "Jerry"))).toDF("id", "name")`
+    
+* seq to Dataset
+
+   `List("a").toDS()`  
+   `Seq(1, 3, 5).toDS()`
    
+* create from Seq of case class
+
+   // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)
+   ```
+    val caseClassDS = Seq(Person("Andy", 32)).toDS()
+    val caseClassDS = spark.createDataset(Seq(Person("Andy", 32), Person("Andy2", 33)))
+   ```
    
 #### create from RDD 
+
+    `val rdd = sc.parallelize(1 to 5)`
+   `spark.createDataset(rdd)`
    
 *  `val rdd = sc.parallelize(1 to 5)`       
    `rdd.toDS().show()`
@@ -50,9 +64,8 @@ DataFrame is simply a type alias of Dataset[Row]
 #### create from File    
 * `spark.read.json("examples/src/main/resources/people.json")`
 
-*  
-  ```
-   val path = "examples/src/main/resources/people.json"`
+* ```
+  val path = "examples/src/main/resources/people.json"`
   val peopleDS = spark.read.json(path).as[Person]
   ```
 
