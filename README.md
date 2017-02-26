@@ -71,6 +71,16 @@ DataFrame is simply a type alias of Dataset[Row]
      .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
      .toDF()
   ```
+* create DataFrame from RDD with schema
+
+  ```
+    val rows = freqItemsets.map(f => Row(f.items, f.freq))
+    val schema = StructType(Seq(
+      StructField("items", dataset.schema($(featuresCol)).dataType, nullable = false),
+      StructField("freq", LongType, nullable = false)))
+    val frequentItems = dataset.sparkSession.createDataFrame(rows, schema)
+  ```
+  
 *  create DataSet from File    
   ```
     spark.read.json("examples/src/main/resources/people.json")
@@ -86,13 +96,13 @@ DataFrame is simply a type alias of Dataset[Row]
 
 * select with col function
 
-```
+  ```
     import org.apache.spark.sql.functions._
     dataset.select(col($(labelCol)), col($(featuresCol))).rdd.map {
       case Row(label: Double, features: Vector) =>
         LabeledPoint(label, features)
     }
-```
+  ```
 
 * select with basic calculation
  
@@ -141,20 +151,12 @@ DataFrame is simply a type alias of Dataset[Row]
 
 * print schema
 
-```
+  ```
     df.printSchema()
-```
+  ```
 
-```
-    val rows = parentModel.freqItemsets.map(f => Row(f.items, f.freq))
 
-    val schema = StructType(Seq(
-      StructField("items", dataset.schema($(featuresCol)).dataType, nullable = false),
-      StructField("freq", LongType, nullable = false)))
-    val frequentItems = dataset.sparkSession.createDataFrame(rows, schema)
-```
-`import org.apache.spark.sql.functions._`
-`data.where(col($(featuresCol)).isNotNull)`
+
 
 
 
