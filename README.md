@@ -71,7 +71,7 @@ DataFrame is simply a type alias of Dataset[Row]
      .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
      .toDF()
   ```
-*  create from File    
+*  create DataSet from File    
   ```
     spark.read.json("examples/src/main/resources/people.json")
   ```
@@ -84,32 +84,44 @@ DataFrame is simply a type alias of Dataset[Row]
 
 ### Select
 
- * `df.select($"name", $"age" + 1).show()`
+* select with basic calculation
+ 
+  ```
+    df.select($"name", $"age" + 1).show()
+  ```
 
- * `df.createOrReplaceTempView("people")`
-   `val sqlDF = spark.sql("SELECT * FROM people")`
- 
- * `df.select($"name", $"age" + 1).show()`
- 
- * `val teenagersDF = spark.sql("SELECT name, age FROM people WHERE age BETWEEN 13 AND 19")`
- 
-### Filter
- 
- * `df.filter($"age" > 21).show()`
- 
-###  GroupBy
+* select from temp view
 
- * `df.groupBy("age").count().show()`
+  ```
+    df.createOrReplaceTempView("people")
+    val sqlDF = spark.sql("SELECT * FROM people")
+  ```
  
-###  Temp View and Table
-
-* `df.createGlobalTempView("people")`
-
-* `// Global temporary view is tied to a system preserved database `global_temp``
-  `spark.sql("SELECT * FROM global_temp.people").show()`
+  ```
+    // Global temporary view is tied to a system preserved database `global_temp
+    spark.sql("SELECT * FROM global_temp.people").show()
   
-* `// Global temporary view is cross-session`
-  `spark.newSession().sql("SELECT * FROM global_temp.people").show()`
+    // Global temporary view is cross-session
+    spark.newSession().sql("SELECT * FROM global_temp.people").show()
+  ```
+   
+* select with sql
+ 
+  ```
+    val teenagersDF = spark.sql("SELECT name, age FROM people WHERE age BETWEEN 13 AND 19")
+  ```
+ 
+* Filter
+ 
+  ```
+    df.filter($"age" > 21).show()
+  ```      
+ 
+* GroupBy
+
+ ```
+   df.groupBy("age").count().show()
+ ```  
  
 
 ### UDF
