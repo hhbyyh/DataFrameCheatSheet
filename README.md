@@ -38,18 +38,23 @@ DataFrame is simply a type alias of Dataset[Row]
    `rdd.toDS().show()`
   
 * // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)   
-   `val peopleDF = spark.sparkContext`
-  `.textFile("examples/src/main/resources/people.txt")`
-  `.map(_.split(","))`
-  `.map(attributes => Person(attributes(0), attributes(1).trim.toInt))`
-  `.toDF()`
+  ```
+  val peopleDF = spark.sparkContext
+  .textFile("examples/src/main/resources/people.txt")
+  .map(_.split(","))
+  .map(attributes => Person(attributes(0), attributes(1).trim.toInt))
+  .toDF()
+  ```
 
 
 #### create from File    
 * `spark.read.json("examples/src/main/resources/people.json")`
 
-* `val path = "examples/src/main/resources/people.json"`
-  `val peopleDS = spark.read.json(path).as[Person]`
+*  
+  ```
+   val path = "examples/src/main/resources/people.json"`
+  val peopleDS = spark.read.json(path).as[Person]
+  ```
 
 
 ### Select
