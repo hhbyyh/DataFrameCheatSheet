@@ -84,6 +84,16 @@ DataFrame is simply a type alias of Dataset[Row]
 
 ### Select
 
+* select with col function
+
+```
+    import org.apache.spark.sql.functions._
+    dataset.select(col($(labelCol)), col($(featuresCol))).rdd.map {
+      case Row(label: Double, features: Vector) =>
+        LabeledPoint(label, features)
+    }
+```
+
 * select with basic calculation
  
   ```
@@ -129,7 +139,11 @@ DataFrame is simply a type alias of Dataset[Row]
 
 ### Schema
 
-df.printSchema()
+* print schema
+
+```
+    df.printSchema()
+```
 
 ```
     val rows = parentModel.freqItemsets.map(f => Row(f.items, f.freq))
