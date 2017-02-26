@@ -154,12 +154,13 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     df.printSchema()
   ```
+  ```
+    dataset.schema($(labelCol))
+  ```
 
-
-
-
-
-
+  ```
+    MetadataUtils.getNumClasses(dataset.schema($(labelCol)))
+  ```
 
 
 
