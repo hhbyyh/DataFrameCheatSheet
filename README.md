@@ -63,8 +63,8 @@ DataFrame is simply a type alias of Dataset[Row]
     rdd.toDS().show()
   ```
   
-  ```  
-    // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)   
+    // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)  
+  ```   
     val peopleDF = spark.sparkContext
      .textFile("examples/src/main/resources/people.txt")
      .map(_.split(","))
