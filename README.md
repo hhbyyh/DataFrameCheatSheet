@@ -90,6 +90,12 @@ DataFrame is simply a type alias of Dataset[Row]
     val path = "examples/src/main/resources/people.json"`
     val peopleDS = spark.read.json(path).as[Person]
   ```
+  
+  ```
+    import spark.implicits._
+    val dataset = spark.read.textFile("data/mllib/sample_fpgrowth.txt")
+      .map(t => t.split(" ")).toDF("features")
+  ```
 
 
 ### Select
