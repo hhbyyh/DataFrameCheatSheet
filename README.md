@@ -54,13 +54,16 @@ DataFrame is simply a type alias of Dataset[Row]
 * create Dataset from RDD 
 
   ```
+    import spark.implicits._
     val rdd = sc.parallelize(1 to 5)
     spark.createDataset(rdd)
   ```
    
   ```
+    import spark.implicits._
     val rdd = sc.parallelize(1 to 5)
     rdd.toDS().show()
+    rdd.toDF().show()
   ```
   
     // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)  
