@@ -208,6 +208,16 @@ DataFrame is simply a type alias of Dataset[Row]
     df.filter($"age" > 21).show()
   ```   
   
+* sort
+
+  ```
+    import org.apache.spark.sql.functions._
+
+    df.orderBy(asc("col1"))
+
+    df.sort(desc("col2"))
+  ```
+  
 * Rename column
 
   ```
@@ -268,6 +278,17 @@ DataFrame is simply a type alias of Dataset[Row]
     df.join(broadcast(dfMax), "col1").show()
   ```
   
+  ```
+    Leaddetails.join(
+        Utm_Master, 
+        Leaddetails("LeadSource") <=> Utm_Master("LeadSource")
+            && Leaddetails("Utm_Source") <=> Utm_Master("Utm_Source")
+            && Leaddetails("Utm_Medium") <=> Utm_Master("Utm_Medium")
+            && Leaddetails("Utm_Campaign") <=> Utm_Master("Utm_Campaign"),
+        "left"
+    )
+  ```
+  
 * concat
 
   ```
@@ -289,16 +310,22 @@ DataFrame is simply a type alias of Dataset[Row]
       }
    ```   
    
- * when
+* when
  
-   ```
+  ```
      val ic = col(inputCol)
      outputDF = outputDF.withColumn(outputCol,
        when(ic.isNull, surrogate)
        .when(ic === $(missingValue), surrogate)
        .otherwise(ic)
        .cast(inputType))
-   ```
+  ```
+   
+  ```
+    val coder: (Int => String) = (arg: Int) => {if (arg < 100) "little" else "big"}
+    val sqlfunc = udf(coder)
+    myDF.withColumn("Code", sqlfunc(col("Amt")))
+  ```
 
 
 ### Append
