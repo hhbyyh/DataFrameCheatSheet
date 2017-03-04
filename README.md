@@ -332,6 +332,40 @@ DataFrame is simply a type alias of Dataset[Row]
     val sqlfunc = udf(coder)
     myDF.withColumn("Code", sqlfunc(col("Amt")))
   ```
+  
+  ```
+    // (1, -1) label to (1, 0) label
+    df.select($"id", when($"label" === 1, 1).otherwise(0).as("label")).show()
+  ```
+  
+  ```
+    // drop NaN and null
+    df.na.drop().show()
+  ```
+  
+* cube  
+  
+  ```
+    ds.cube($"department", $"gender").agg(Map(
+        "salary" -> "avg",
+        "age" -> "max"
+      ))
+  ```
+  
+* statistics
+
+  ```
+    df.stat.freqItems(Seq("id")).show()
+    df.stat.approxQuantile(...)
+    df.stat.bloomFilter(...)
+    df.stat.countMinSketch()
+  ```
+  
+  ```
+    // count distinct
+    df.select(approx_count_distinct(col("value"))).show()
+  ```
+
 
 
 ### Append
