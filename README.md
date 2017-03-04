@@ -1,5 +1,5 @@
 # Spark DataFrame Cheat Sheet
-Yuhao's cheat sheet for Spark DataFrame. Glad if it can help and welcome to contribute. 
+Yuhao's cheat sheet for Apache Spark DataFrame. Welcome to contribute. 
 
 ## Core Concepts
 DataFrame is simply a type alias of Dataset[Row]
@@ -43,12 +43,22 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     spark.createDataset(Array((1, "Tom"), (2, "Jerry"))).toDF("id", "name")
   ```
+  
+  ```
+    val newNames = Seq("id", "x1", "x2", "x3")
+    val dfRenamed = df.toDF(newNames: _*)
+  ```
     
 * Seq to Dataset
 
   ```
     List("a").toDS()
     Seq(1, 3, 5).toDS()
+  ```
+  
+  ```
+    import spark.implicits._
+    Seq.empty[(String, Int)].toDF("k", "v")
   ```
    
 * create Dataset from Seq of case class
@@ -95,6 +105,12 @@ DataFrame is simply a type alias of Dataset[Row]
       StructField("items", dataset.schema($(featuresCol)).dataType, nullable = false),
       StructField("freq", LongType, nullable = false)))
     val frequentItems = dataset.sparkSession.createDataFrame(rows, schema)
+  ```
+  
+  ```
+    val schema = StructType( StructField("k", StringType, true) ::
+        StructField("v", IntegerType, false) :: Nil)
+    spark.createDataFrame(sc.emptyRDD[Row], schema).show()
   ```
   
 *  create DataSet from File    
@@ -178,7 +194,22 @@ DataFrame is simply a type alias of Dataset[Row]
  
   ```
     df.filter($"age" > 21).show()
-  ```      
+  ```   
+  
+* Rename column
+
+  ```
+      df.select($"id".alias("x1")).show()
+  ```
+  
+  ```
+    val lookup = Map("id" -> "foo", "value" -> "bar")
+    df.select(df.columns.map(c => col(c).as(lookup.getOrElse(c, c))): _*)
+  ```
+  
+  ```
+    df.withColumnRenamed("_1", "x1")
+  ```
  
 * GroupBy
 
@@ -227,6 +258,10 @@ DataFrame is simply a type alias of Dataset[Row]
   
   ```
     df.withColumn("map", map(lit("key1"), lit(1), lit("key2"), lit(2)))
+  ```
+  
+  ```
+    df.select('*', (df.age + 10).alias('newAge'))
   ```
 
 ### UDF
