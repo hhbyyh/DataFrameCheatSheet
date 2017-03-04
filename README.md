@@ -222,6 +222,17 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     df.withColumnRenamed("_1", "x1")
   ```
+  
+* change column type (cast)
+
+  ```
+      val df2 = df.select($"id", col("value").cast(StringType))
+  ```
+  
+  ```
+  df.selectExpr("cast(year as int) year", 
+                        "make")
+  ```
  
 * GroupBy
 
@@ -277,6 +288,17 @@ DataFrame is simply a type alias of Dataset[Row]
         ...
       }
    ```   
+   
+ * when
+ 
+   ```
+     val ic = col(inputCol)
+     outputDF = outputDF.withColumn(outputCol,
+       when(ic.isNull, surrogate)
+       .when(ic === $(missingValue), surrogate)
+       .otherwise(ic)
+       .cast(inputType))
+   ```
 
 
 ### Append
@@ -347,7 +369,44 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     MetadataUtils.getNumClasses(dataset.schema($(labelCol)))
   ```
+ 
+* repartition
+
+  ```
+    df.repartition($"value")
+    df.explain()
+  ```
   
+  ```
+    df.repartition(2)
+  ```    
+
+* custom class
+
+  ```
+    import spark.implicits._
+    class MyObj(val i: Int)
+    implicit val myObjEncoder = org.apache.spark.sql.Encoders.kryo[MyObj]
+    // ...
+    val d = spark.createDataset(Seq(new MyObj(1),new MyObj(2),new MyObj(3)))
+  ```
+
+  ```
+    class MyObj(val i: Int, val u: java.util.UUID, val s: Set[String])
+
+    // alias for the type to convert to and from
+    type MyObjEncoded = (Int, String, Set[String])
+
+    // implicit conversions
+    implicit def toEncoded(o: MyObj): MyObjEncoded = (o.i, o.u.toString, o.s)
+    implicit def fromEncoded(e: MyObjEncoded): MyObj =
+        new MyObj(e._1, java.util.UUID.fromString(e._2), e._3)
+
+    val d = spark.createDataset(Seq[MyObjEncoded](
+      new MyObj(1, java.util.UUID.randomUUID, Set("foo")),
+      new MyObj(2, java.util.UUID.randomUUID, Set("bar"))
+    )).toDF("i","u","s").as[MyObjEncoded]
+  ```
   
 
 ### Read and write
@@ -365,4 +424,12 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     df.checkpoint()
   ```
+  
+* save by key
+
+  ```
+      df.write.partitionBy("id").text("people")
+  ```
+
+
   
