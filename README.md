@@ -66,6 +66,11 @@ DataFrame is simply a type alias of Dataset[Row]
     rdd.toDF().show()
   ```
   
+  ```
+    val df = rdd.map({ 
+    case Row(val1: String, ..., valN: Long) => (val1, ..., valN)}).toDF("col1_name", ..., "colN_name")
+  ```
+  
     // define case class Person(name: String, age: Long) outside of the method. [reason](https://issues.scala-lang.org/browse/SI-6649)  
   ```   
     val peopleDF = spark.sparkContext
@@ -85,20 +90,31 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
   
 *  create DataSet from File    
-  ```
+  ``` 
     spark.read.json("examples/src/main/resources/people.json")
   ```
 
   ```
+    // from json
     val path = "examples/src/main/resources/people.json"`
     val peopleDS = spark.read.json(path).as[Person]
   ```
   
   ```
+    // from text file
     import spark.implicits._
     val dataset = spark.read.textFile("data/mllib/sample_fpgrowth.txt")
       .map(t => t.split(" ")).toDF("features")
   ```
+  
+  ```
+    // read from csv
+    val df = session.read
+      .format("csv")
+      .option("header", "true") //reading the headers
+      .option("mode", "DROPMALFORMED")
+      .csv("csv/file/path")
+  ```      
 
 
 ### Select
@@ -151,7 +167,49 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     df.groupBy("age").count().show()
   ```  
- 
+  
+  ```
+    val dfMax = df.groupBy($"id").agg(sum($"value"))
+  ```
+  
+  ```
+    df.as[Record]
+      .groupByKey(_.id)
+      .reduceGroups((x, y) => x).show()
+  ```
+  
+  
+* Window
+
+  ```
+    import org.apache.spark.sql.functions.{rowNumber, max, broadcast}
+    import org.apache.spark.sql.expressions.Window
+
+    val temp = Window.partitionBy($"hour").orderBy($"TotalValue".desc)
+
+    val top = df.withColumn("rn", rowNumber.over(temp)).where($"rn" === 1)
+  ```
+  
+ * join 
+  
+  ```
+    df.join(broadcast(dfMax), "col1").show()
+  ```
+  
+  
+  
+
+### Append
+
+* append constant
+  ```
+    import org.apache.spark.sql.functions._
+    df.withColumn("new_column", lit(10)).show()
+  ```
+  
+  ```
+    df.withColumn("map", map(lit("key1"), lit(1), lit("key2"), lit(2)))
+  ```
 
 ### UDF
 
