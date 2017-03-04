@@ -208,6 +208,12 @@ DataFrame is simply a type alias of Dataset[Row]
     df.filter($"age" > 21).show()
   ```   
   
+  ```
+    val ic = col(inputCol)
+    val filtered = dataset.select(ic.cast(DoubleType))
+      .filter(ic.isNotNull && ic =!= $(missingValue) && !ic.isNaN)
+  ```
+  
 * sort
 
   ```
