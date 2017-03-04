@@ -162,6 +162,18 @@ DataFrame is simply a type alias of Dataset[Row]
     // median (or other percentage)
     filtered.stat.approxQuantile(inputCol, Array(0.5), 0.001)
   ```
+  
+  ```
+    // check df empty
+    df.rdd.isEmpty
+  ```
+  
+  ```
+    // select array of columns
+    df.select(cols.head, cols.tail: _*)
+    
+    df.select(cols.map(col): _*)
+  ```
 
 * select with basic calculation
  
@@ -239,14 +251,33 @@ DataFrame is simply a type alias of Dataset[Row]
     val top = df.withColumn("rn", rowNumber.over(temp)).where($"rn" === 1)
   ```
   
- * join 
+* join 
   
   ```
     df.join(broadcast(dfMax), "col1").show()
   ```
   
+* concat
+
+  ```
+    df.createOrReplaceTempView("df")
+    spark.sql("SELECT CONCAT(id, ' ',  value) as cc FROM df").show()
+  ```  
   
+  ```
+    df.select(concat($"id", lit(" "), $"value"))
+  ```
   
+* with generic
+  
+  ```
+    private def genericFit[T: ClassTag](dataset: Dataset[_]): FPGrowthModel = {
+        val data = dataset.select($(featuresCol))
+        val items = data.where(col($(featuresCol)).isNotNull).rdd.map(r => r.getSeq[T](0).toArray)
+        ...
+      }
+   ```   
+
 
 ### Append
 
@@ -283,6 +314,14 @@ DataFrame is simply a type alias of Dataset[Row]
     dataset.withColumn($(predictionCol), predictUDF(col($(featuresCol))))
   ```
   
+  ```
+    // concat two columns with udf
+    //Define a udf to concatenate two passed in string values
+    val getConcatenated = udf( (first: String, second: String) => { first + " " + second } )
+
+    //use withColumn method to add a new column called newColName
+    df.withColumn("newColName", getConcatenated($"col1", $"col2")).select("newColName", "col1", "col2").show()
+  ```
   
 ### Schema
 
@@ -291,18 +330,25 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
     df.printSchema()
   ```
+  
   ```
     dataset.schema($(labelCol))
   ```
   
   ```
-  // spark internal
-  SchemaUtils.checkColumnTypes(schema, inputCol, Seq(DoubleType, FloatType))
+    df.explain()
+  ```    
+  
+  ```
+    // spark internal
+    SchemaUtils.checkColumnTypes(schema, inputCol, Seq(DoubleType, FloatType))
   ```
 
   ```
     MetadataUtils.getNumClasses(dataset.schema($(labelCol)))
   ```
+  
+  
 
 ### Read and write
 
@@ -314,4 +360,9 @@ DataFrame is simply a type alias of Dataset[Row]
         data.select("coefficients", "intercept").head()
   ```
   
+* checkpoint
+
+  ```
+    df.checkpoint()
+  ```
   
