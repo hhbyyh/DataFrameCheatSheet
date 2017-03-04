@@ -481,6 +481,8 @@ DataFrame is simply a type alias of Dataset[Row]
 * parquet
 
   ```
+    df.write.parquet(dataPath)
+    ...
     val data = sparkSession.read.format("parquet").load(dataPath)
     val Row(coefficients: Vector, intercept: Double) =
         data.select("coefficients", "intercept").head()
