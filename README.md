@@ -21,7 +21,15 @@ DataFrame is simply a type alias of Dataset[Row]
 * create DataSet from seq
 
   ```
+    // vertically
     spark.createDataset(Seq(1, 2))
+  ```
+  
+  ```
+    // horizontally
+    val rows = spark.sparkContext.parallelize(Seq(Row.fromSeq(Seq(1, 2))))
+    val schema = StructType(Seq("col1", "col2").map(col => StructField(col, IntegerType, nullable = false)))
+    spark.createDataFrame(rows, schema).show()
   ```
   
 * create DataSet from range
@@ -127,6 +135,16 @@ DataFrame is simply a type alias of Dataset[Row]
       case Row(label: Double, features: Vector) =>
         LabeledPoint(label, features)
     }
+  ```
+  
+  ```
+    // avg average
+    dataset.select(avg(inputCol)).as[Double].first()
+  ```
+  
+  ```
+    // median (or other percentage)
+    filtered.stat.approxQuantile(inputCol, Array(0.5), 0.001)
   ```
 
 * select with basic calculation
@@ -240,6 +258,11 @@ DataFrame is simply a type alias of Dataset[Row]
   ```
   ```
     dataset.schema($(labelCol))
+  ```
+  
+  ```
+  // spark internal
+  SchemaUtils.checkColumnTypes(schema, inputCol, Seq(DoubleType, FloatType))
   ```
 
   ```
