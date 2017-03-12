@@ -178,6 +178,7 @@ DataFrame is simply a type alias of Dataset[Row]
 * select with basic calculation
  
   ```
+    import spark.implicits._
     df.select($"name", $"age" + 1).show()
   ```
 
