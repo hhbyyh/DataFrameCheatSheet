@@ -175,8 +175,9 @@ DataFrame is simply a type alias of Dataset[Row]
     df.select(cols.map(col): _*)
   ```
 * select with type
+
   ```
-output.select("features").as[Vector].collect()
+    output.select("features").as[Vector].collect()
   ```
 
 * select with basic calculation
