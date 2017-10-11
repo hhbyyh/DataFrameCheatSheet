@@ -220,6 +220,14 @@ DataFrame is simply a type alias of Dataset[Row]
       .filter(ic.isNotNull && ic =!= $(missingValue) && !ic.isNaN)
   ```
   
+  ```
+  df.filter($"state" === "TX") 
+  df.filter("state = 'TX'")
+  df.filter($"foo".contains("bar"))
+  df.filter(not($"state" === "TX"))
+  df.filter($"foo".like("bar"))
+  ```
+  
 * sort
 
   ```
