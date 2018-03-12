@@ -1,0 +1,18 @@
+
+Create DataFrame
+
+    >>> df = spark.createDataFrame([(0.5,)], ["values"])
+
+    >>> data = [(0, Vectors.dense([-1.0, -1.0 ]),),
+    ...         (1, Vectors.dense([-1.0, 1.0 ]),),
+    ...         (2, Vectors.dense([1.0, -1.0 ]),),
+    ...         (3, Vectors.dense([1.0, 1.0]),)]
+    >>> df = spark.createDataFrame(data, ["id", "features"])
+    
+    >>> df = spark.createDataFrame(
+    ...    [(0, ["a", "b", "c"]), (1, ["a", "b", "b", "c", "a"])],
+    ...    ["label", "raw"])
+    
+    >>> df1 = spark.createDataFrame([(Vectors.dense([5.0, 8.0, 6.0]),)], ["vec"])
+    
+    >>> df = spark.createDataFrame([(["a", "b", "c"],)], ["words"])
