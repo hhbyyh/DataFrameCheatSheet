@@ -1,5 +1,5 @@
 # Spark DataFrame Cheat Sheet
-Yuhao's cheat sheet for Apache Spark DataFrame. Welcome to contribute. 
+Cheatsheet for Apache Spark DataFrame.
 
 ## Core Concepts
 DataFrame is simply a type alias of Dataset[Row]
